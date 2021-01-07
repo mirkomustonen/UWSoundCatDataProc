@@ -1,3 +1,4 @@
+##---- Function to read SPL data from HDF5 files corresponding to selected time period ----
 read_sound <- function(loc, beg_period, end_period) {
   
   library(rhdf5)  # Library for handling HDF5 files
@@ -42,7 +43,7 @@ read_sound <- function(loc, beg_period, end_period) {
             }
           }
   }
-  TOB_data_l <- subset(TOB_data_l, DateTime > beg_period)  # Subset data to selected time period
-  TOB_data_l <- subset(TOB_data_l, DateTime < end_period)  # Subset data to selected time period
+  TOB_data_l <- subset(TOB_data_l, DateTime >= beg_period)  # Subset data to selected time period
+  TOB_data_l <- subset(TOB_data_l, DateTime <= end_period)  # Subset data to selected time period
   return(list(TOB_data_l, Freqs_data))
 }
