@@ -10,6 +10,7 @@
 #' @return List of: 1. dataframe with timestamps, 1/3 oct SPLs 2: Center frequencies
 #' 
 read_sound <- function(loc, beg_per, end_per) {
+  options(warn = -1)  # Turn warnings off
   library(rhdf5)  # Library for handling HDF5 files
   library(lubridate)  # Library for better datetime handling
   
@@ -62,5 +63,11 @@ read_sound <- function(loc, beg_per, end_per) {
   }
   tob_data_l <- subset(tob_data_l, DateTime >= beg_per)  # Subset data to selected time period
   tob_data_l <- subset(tob_data_l, DateTime <= end_per)  # Subset data to selected time period
+  # Move DateTime to first position
+  name_tob <- names(tob_data_l)
+  tob_data_l <- tob_data_l[c(name_tob[length(name_tob)], name_tob[1:(length(name_tob) - 1)])]
+  detach("package:lubridate", unload = TRUE)  # Detach the lubridate package
+  detach("package:rhdf5", unload = TRUE)  # Detach the rhdf5 package
+  options(warn = 0)  # Turn warnings on
   return(list(tob_data_l, freqs_data))
 }
