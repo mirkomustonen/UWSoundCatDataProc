@@ -5,8 +5,7 @@
 #' 
 #' @param tob_data Dataframe listing the 1/3 oct band SPLs to be plotted
 #' @param freqs_data Vector listing the center frequencies of 1/3 oct bands
-#' @param out_folder Name of the folder where the plot will be saved
-#' @param out_file_name File name of the saved file
+#' @param pl_title Title of the plot
 #' 
 plot_spec_den <- function(tob_data, freqs_data, pl_title) {
    library(RColorBrewer)
@@ -65,7 +64,9 @@ plot_spec_den <- function(tob_data, freqs_data, pl_title) {
    image(x_bin, y_bin, no_of_points2D, col = col_list, xlab = "Frequency [Hz]", 
          ylab = expression(paste("SDL"["1/3 "], " L"["p,f"]^"1/3 ", " [dB ref 1 ", mu, 'Pa'^2, 'Hz'^{-1},"]")),
          main = pl_title,
-         xlim = c(min(tob_freq_lower), max(tob_freq_lower)), xaxt = "n", log = "x")
+         xlim = c(min(tob_freq_lower), max(tob_freq_lower)),
+         ylim = c(40, 140),
+         xaxt = "n", log = "x")
    axis(1, at = tob_freq_lower, labels = freqs_nom)
    par(op)
 }
