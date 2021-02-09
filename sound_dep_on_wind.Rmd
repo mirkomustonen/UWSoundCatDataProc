@@ -54,7 +54,7 @@ source('read_closest_ais.R')
 ais_dat <- read_closest_ais(loc_name, beg_date, end_date)  # Read closest AIS data
 head(ais_dat, 4)  # Display 4 rows of the data
 ```
-```{r Plot closest distance, echo=FALSE, fig.height=3.5, fig.width=8, message=FALSE, warning=FALSE, out.width=}
+```{r Plot closest distance, echo=FALSE, fig.height=3.5, fig.width=8, message=FALSE, warning=FALSE}
 library(dygraphs)
 library(xts)
 
@@ -76,6 +76,7 @@ For analysis the sound level, wind speed, and ship distance data need to be inte
 source('integrate_sound_wind_ais.R')
 sound_wind_ais <- integrate_sound_wind_ais(loc_name, beg_date, end_date)
 head(sound_wind_ais, 4)
+base::closeAllConnections()  # Close temporary file created during reading
 ```
 
 ```{r Plot two of the dependencies, echo=FALSE, fig.width = 8, fig.height = 3.5, out.width = "\\textwidth"}
