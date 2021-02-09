@@ -22,14 +22,14 @@ plot_spec_den_save <- function(tob_data, freqs_data, pl_title, out_folder, out_f
 # source('read_sound.R')
 # loc <- locations[1]
 # 
-# beg_per <- '2014-01-01'
-# end_per <- '2014-02-01'
+# beg_per <- '2014-07-01'
+# end_per <- '2014-08-01'
 # out_list <- read_sound(loc, beg_per, end_per)
 # tob_data_i <- out_list[[1]]
 # freqs_data_i <- out_list[[2]]
 # remove(out_list)
 # 
-# pl_title <- paste(loc, 'Correlation plot',
+# pl_title <- paste(loc, '2D Density of SDLs',
 #                   gsub('-', '/', beg_per), '-',
 #                   gsub('-', '/', substr(end_per, 6, 10)))
 # 

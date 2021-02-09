@@ -72,15 +72,15 @@ plot_spec_den <- function(tob_data, freqs_data, pl_title) {
 }
 
 
-# source('read_sound.R')
-# 
-# loc <- 'B23'
-# beg_per <- '2014-07-01'
-# end_per <- '2014-08-01'
-# out_list <- read_sound(loc, beg_per, end_per)
-# tob_data_i <- out_list[[1]]
-# freqs_data_i <- out_list[[2]]
-# remove(out_list)
-# 
-# pl_t <- paste(loc, 'Sec_den', beg_per, end_per)
-# plot_spec_den(tob_data_i, freqs_data_i, pl_t)
+source('read_sound.R')
+
+loc <- 'B23'
+beg_per <- '2014-07-01'
+end_per <- '2014-08-01'
+out_list <- read_sound(loc, beg_per, end_per)
+tob_data_i <- out_list[[1]]
+freqs_data_i <- out_list[[2]]
+remove(out_list)
+
+pl_t <- paste(loc, 'Sec_den', beg_per, end_per)
+plot_spec_den(tob_data_i, freqs_data_i, pl_t)
