@@ -30,8 +30,8 @@ read_closest_ais <- function(loc_nam, beg_per, end_per) {
         # Order the dataframe according to Time
         ais_tab <- ais_tab[order(ais_tab$Time),]
         colnames(ais_tab)[colnames(ais_tab) == "Time"] <- "DateTime"
-        base::closeAllConnections()  # Close temporary file created during reading
-        return(ais_tab)
+        closeAllConnections()  # Close temporary file created during reading
+        ais_tab
 }
 # loc_name <- 'B20'
 # beg_per <- '2014-01-01' 

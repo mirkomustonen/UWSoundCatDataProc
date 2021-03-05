@@ -26,20 +26,19 @@ read_sound <- function(loc, beg_per, end_per) {
   # Read third-octave nominal and numerical values from file
   tobs <- read.table(file = 'Third_octs.txt', sep = '\t', header = TRUE)
   
-  # Loop through the HDF5 SPL data files and read the data into a dataframe
-  k <- 0  # Flag value for marking the first iteration
-  for (i_file in loc_files) {
+  # Function for reading a single HDF5 file from the loc_files list
+  read_sound_file <- function(i_file) {
     f_beg_d <- as.POSIXct(substr(i_file, 26, 33), format =  '%Y%m%d', tz = 'UTC')  # Beginning time of the file to be read in
     f_end_d <- as.POSIXct(substr(i_file, 35, 42), format =  '%Y%m%d', tz = 'UTC')  # End time of the file to be read in
     file_per <- interval(f_beg_d, f_end_d, tzone = "UTC") # Create a time period with file beginning and end times
-          
+    
     file_per_test <- !is.na(intersect(sel_per, file_per))  # Check whether there is overlap between the selected and file time periods
     if (file_per_test) {
       file_path <- file.path("PAM_Output", i_file)  # Construct the HDF5 file path to be read in
-            
+      
       tob_data <- h5read(file_path, "/Data/LeqMeasurementsOfChannel1")  # Read Third Octave Band data from the file in matrix form
       tob_data <- as.data.frame(t(tob_data))  # Transform the tob data matrix and convert to dataframe
-
+      
       # Read the center frequencies of the third octave bands
       freqs_data <- h5read(file_path, "Metadata/FrequencyIndex")
       # For first tob center freq find index of closest value from the nominal values list
@@ -52,15 +51,14 @@ read_sound <- function(loc, beg_per, end_per) {
       DateTime_data <- h5read(file_path, "/Data/DateTime")
       # Convert the time stamps to POSIXct format and add as dataframe column vector
       tob_data$DateTime <- as.POSIXct(DateTime_data, tz = 'UTC')
-            
-      if (k == 0) {
-        tob_data_l <- tob_data  # For first iteration create new table the data will be added to
-        k <- 1  # Set the first iteration flag to 1
-      } else {
-        tob_data_l <- rbind(tob_data_l, tob_data)  # For iterations after first aggregate dataframes into larger dataframe
-      }
+      tob_data
     }
   }
+  freqs_data <- h5read(file.path("PAM_Output", loc_files[1]), "Metadata/FrequencyIndex")
+  
+  # Vectorized reading of the HDF5 SPL data files and read the data into a dataframe
+  tob_data_l <- do.call(rbind, lapply(loc_files, read_sound_file))
+
   tob_data_l <- subset(tob_data_l, DateTime >= beg_per)  # Subset data to selected time period
   tob_data_l <- subset(tob_data_l, DateTime <= end_per)  # Subset data to selected time period
   # Move DateTime to first position
@@ -69,5 +67,7 @@ read_sound <- function(loc, beg_per, end_per) {
   detach("package:lubridate", unload = TRUE)  # Detach the lubridate package
   detach("package:rhdf5", unload = TRUE)  # Detach the rhdf5 package
   options(warn = 0)  # Turn warnings on
-  return(list(tob_data_l, freqs_data))
+  list(tob_data_l, freqs_data)
 }
+
+# s_data <- read_sound('B20', '2014-01-13', '2014-01-16')
