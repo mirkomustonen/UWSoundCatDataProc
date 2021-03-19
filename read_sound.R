@@ -7,7 +7,7 @@
 #' @param beg_per Beginning time in character 2014-01-13 of the data to be read.
 #' @param end_per Ending time in character 2014-02-13 of the data to be read.
 #' 
-#' @return List of: 1. dataframe with timestamps, 1/3 oct SPLs 2: Center frequencies
+#' @return Dataframe with timestamps, 1/3 oct SPLs
 #' 
 read_sound <- function(loc, beg_per, end_per) {
   options(warn = -1)  # Turn warnings off
@@ -54,7 +54,6 @@ read_sound <- function(loc, beg_per, end_per) {
       tob_data
     }
   }
-  freqs_data <- h5read(file.path("PAM_Output", loc_files[1]), "Metadata/FrequencyIndex")
   
   # Vectorized reading of the HDF5 SPL data files and read the data into a dataframe
   tob_data_l <- do.call(rbind, lapply(loc_files, read_sound_file))
@@ -63,11 +62,45 @@ read_sound <- function(loc, beg_per, end_per) {
   tob_data_l <- subset(tob_data_l, DateTime <= end_per)  # Subset data to selected time period
   # Move DateTime to first position
   name_tob <- names(tob_data_l)
-  tob_data_l <- tob_data_l[c(name_tob[length(name_tob)], name_tob[1:(length(name_tob) - 1)])]
+  tob_data_l <- tob_data_l[c(name_tob[length(name_tob)], name_tob[-length(name_tob)])]
+  # Change the variable names to be to more technically correct
+  names(tob_data_l) <- c(names(tob_data_l)[1], paste0('tob_', names(tob_data_l)[-1]))
   detach("package:lubridate", unload = TRUE)  # Detach the lubridate package
   detach("package:rhdf5", unload = TRUE)  # Detach the rhdf5 package
   options(warn = 0)  # Turn warnings on
-  list(tob_data_l, freqs_data)
+  tob_data_l
 }
 
-# s_data <- read_sound('B20', '2014-01-13', '2014-01-16')
+
+#' Convert the 1/3 oct band SPLs to spectral density levels
+#'
+#' The tob_to_sp_den function reads a dataframe of 1/3 oct. band SPL values and 
+#' converts the to spectral density levels
+#' 
+#' @param tob_df Dataframe where 1 column lists timestamps and next 28 columns 
+#' the one third octave band values from 25 Hz to 12500 Hz.
+#' 
+#' @return Dataframe with spectral density levels instead 1/3 oct SPLs
+#' 
+tob_to_sp_den <- function(tob_df) {
+  # If input dataframes column names not 'tob_25' and 'tob_12500' for selected 
+  # columns don't run the conversion
+  if (names(tob_df)[2] == 'tob_25' & names(tob_df)[29] == 'tob_12500') {
+    f_centre <- 10^(0.1*14:41)  # Calculate band's center frequencies
+    f_upper <- f_centre*10^0.05  # Calculate band's upper frequencies
+    f_lower <- f_centre/10^0.05  # Calculate band's lower frequencies
+    psd_cor <- 10*log10(f_upper - f_lower)  # Conversion correction
+    # Loop through the columns and calculate spectral density from 1/3 oct SPLs
+    for (i in 1:length(psd_cor)) {
+      tob_df[ ,i + 1] <- tob_df[ ,i + 1] - psd_cor[i]
+    }
+    # Change the variable names to reflect the change in the values
+    names(tob_df) <- gsub('tob_', 'sdl_', names(tob_df))
+    tob_df
+  } else {
+    stop("The 1/3 oct. band conversion works only case where lowest nominal band is 25 Hz")
+  }
+}
+
+# tob_data <- read_sound('B20', '2014-01-01', '2014-01-16')
+# spd_data <- tob_to_sp_den(tob_data)

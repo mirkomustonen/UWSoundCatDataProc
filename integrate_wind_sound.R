@@ -13,9 +13,7 @@ integrate_wind_sound <- function(loc_name, beg_t_per, end_t_per) {
         source('read_sound.R')  # Read the read_sound function from read_sound.R file
         source('read_wind_data.R')  # Read the read_wind_data function from read_wind_data.R file
         
-        s_out_list <- read_sound(loc_name, beg_t_per, end_t_per)  # Read sound data
-        tob_data_l <- s_out_list[[1]]  # Extract SPL dataframe from sound data only
-        remove(s_out_list)  # Remove unnecessary variables
+        tob_data_l <- read_sound(loc_name, beg_t_per, end_t_per)  # Read sound data
         wind_data_l <- read_wind_data(loc_name, beg_t_per, end_t_per)  # Read wind data
         
         # Interpolate wind data for same time stamps as the SPL data

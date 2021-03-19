@@ -32,7 +32,7 @@ read_wind_data <- function(loc_nam, beg_period, end_period) {
         }
         wind_data_l <- do.call(rbind, lapply(loc_files, read_wind_file))
         wind_data_l <- subset(wind_data_l, DateTime >= beg_period)  # Subset data to selected time period
-        wind_data_l <- subset(wind_data_l, DateTime < end_period)  # Subset data to selected time period
+        wind_data_l <- subset(wind_data_l, DateTime <= end_period)  # Subset data to selected time period
         wind_data_l
 }
 # w_data <- read_wind_data('B23', '2014-01-01', '2014-02-01')

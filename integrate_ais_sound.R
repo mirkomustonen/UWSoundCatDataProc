@@ -13,12 +13,11 @@ integrate_ais_sound <- function(loc_name, beg_t_per, end_t_per) {
         source('read_sound.R')  # Read the read_sound function from read_sound.R file
         source('read_closest_ais.R')  # Read the read_wind_data function from read_wind_data.R file
         
-        s_out_list <- read_sound(loc_name, beg_t_per, end_t_per)  # Read sound data
-        tob_data <- s_out_list[[1]]  # Extract SPL dataframe from sound data only
-        remove(s_out_list)  # Remove unnecessary variables
+        tob_data <- read_sound(loc_name, beg_t_per, end_t_per)  # Read sound data
         ais_data <- read_closest_ais(loc_name, beg_t_per, end_t_per)  # Read AIS data
         ais_data <- subset(ais_data, select = c('DateTime', 'Distance')) # Keep only distances
         # Merge the sound and AIS data
         sound_ais = merge(x = tob_data,y = ais_data,by = "DateTime")
         return(sound_ais)
 }
+# int <- integrate_ais_sound('B20', '2014-01-01', '2014-02-01')

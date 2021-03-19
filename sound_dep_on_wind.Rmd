@@ -25,8 +25,7 @@ source('read_sound.R')
 loc_name <- 'B23'  # Location name
 beg_date <- '2014-01-01'  # Beginning date
 end_date <- '2014-02-01'  # End date
-sound_dat_list <- read_sound(loc_name, beg_date, end_date)
-sound_dat <- sound_dat_list[[1]]
+sound_dat <- read_sound(loc_name, beg_date, end_date)
 head(sound_dat, 4)  # Show first four lines of the read data
 ```
 
@@ -38,9 +37,10 @@ For reading the **wind speed data** the _read_wind_data_ function was written in
 source('read_wind_data.R')
 wind_dat <- read_wind_data(loc_name, beg_date, end_date) # Read wind data
 # Plot the wind data
-with(wind_dat, plot(x = DateTime, y = Wind_speed_ms, type = 'l', 
-                    xlab = 'Time', ylab = 'Wind speed [m/s]', 
-                    main = paste(loc_name, 'SMHI wind', beg_date, end_date)))
+plot(Wind_speed_ms ~ DateTime, 
+     data = wind_dat, type = 'l', 
+     xlab = 'Time', ylab = 'Wind speed [m/s]', 
+     main = paste(loc_name, 'SMHI wind', beg_date, end_date))
 ```
 
 The __Automatic Identification System (AIS) data__ processed was originally collected for the purposes of the BIAS project. This data was extracted for spans of 20 km radius around all the sound monitoring locations. Documentation for the AIS data processing is presented in a jupyter notebook _AIS_processing_documentation.ipynb_. This AIS data was time regularized and a table was created with only the closest ship distance/coordinates at each time step.
@@ -79,15 +79,18 @@ head(sound_wind_ais, 4)
 base::closeAllConnections()  # Close temporary file created during reading
 ```
 
-```{r Plot two of the dependencies, echo=FALSE, fig.width = 8, fig.height = 3.5, out.width = "\\textwidth"}
-with(sound_wind_ais, plot(x = WS_ms, y = sound_wind_ais$`5000`, 
-                          xlab = 'Wind speed [m/s]', 
-                          ylab = '5000 Hz 1/3 oct. SPL [dB re 1 uPa]',
-                          main = paste(loc_name, beg_date, end_date)))
-with(sound_wind_ais, plot(x = Distance, y = sound_wind_ais$`63`,
-                          xlab = 'Closest ship distance [km]', 
-                          ylab = '63 Hz 1/3 oct. SPL [dB re 1 uPa]',
-                          main = paste(loc_name, beg_date, end_date)))
+```{r Plot two of the dependencies, echo=FALSE, fig.width = 8, fig.height = 7, out.width = "\\textwidth"}
+par(mfrow = c(2,1))
+plot(x = sound_wind_ais$WS_ms, y = sound_wind_ais$tob_5000, 
+     pch = 20, col = rgb(0,0,0, alpha = 0.07),
+     xlab = 'Wind speed [m/s]', 
+     ylab = '5000 Hz 1/3 oct. SPL [dB re 1 uPa]',
+     main = paste(loc_name, beg_date, end_date))
+plot(x = sound_wind_ais$Distance, y = sound_wind_ais$tob_63, 
+     pch = 20, col = rgb(0,0,0, alpha = 0.07),
+     xlab = 'Closest ship distance [km]', 
+     ylab = '63 Hz 1/3 oct. SPL [dB re 1 uPa]')
+par(mfrow = c(1,1))
 ```
 ```{r Remove all but few 2, message=FALSE, warning=FALSE, include=FALSE}
 rm(list = setdiff(ls(), c('loc_name', 'beg_date', 'end_date', 'sound_wind_ais'))) # Remove all but one
@@ -124,14 +127,12 @@ From these calculated SDL$_{1/3}$s values one can compose a 2D-density plot wher
 ```{r Plot spectral density of sound, message=FALSE, warning=FALSE}
 source('read_sound.R')
 source('plot_spec_den.R')
-sound_dat_list <- read_sound(loc_name, beg_date, end_date)
-sound_dat <- sound_dat_list[[1]]
-freqs_dat <- sound_dat_list[[2]]
-remove(sound_dat_list)
+sound_dat <- read_sound(loc_name, beg_date, end_date)
+sound_dat <- tob_to_sp_den(sound_dat)
 
 pl_title <- paste(loc_name, '2D-Density of spectral density levels ', 
                   gsub('-', '/', beg_date), '-', 
                   gsub('-', '/', substr(end_date, 6, 10)))
 
-plot_spec_den(sound_dat, freqs_dat, pl_title)
+plot_spec_den(sound_dat, pl_title)
 ```
