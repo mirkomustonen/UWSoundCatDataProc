@@ -72,7 +72,9 @@ plot_spec_den <- function(tob_data, pl_title) {
    # par(op)
 }
 
-source('read_sound.R')
+# TODO try to change from base plot to ggplot2
+
+# source('read_sound.R')
 
 # loc <- 'B23'
 # beg_per <- '2014-07-01'

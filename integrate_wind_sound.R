@@ -21,7 +21,7 @@ integrate_wind_sound <- function(loc_name, beg_t_per, end_t_per) {
         wind_data_int <- data.frame('DateTime' = wind_int$x, 'WS_ms' = wind_int$y)  
         
         tob_data_l$WS_ms <- wind_data_int$WS_ms # Add wind data to the tob data frame
-        return(tob_data_l)
+        tob_data_l
 }
 
 # int <- integrate_wind_sound('B20', '2014-01-01', '2014-02-01')
